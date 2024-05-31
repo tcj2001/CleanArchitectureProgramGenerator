@@ -7,13 +7,15 @@
 
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageType>Template</PackageType>
+    <Version>1.0.6</Version>
 
 	<Authors>Thomson Mathews</Authors>
-	<Description>This is a clean architecture style code generator which will generate Domain project containing entities; Application project containing repository interfaces, service interfaces, service implementations; Persistence project containg ApplicationDbcontext, repository implementations; it will also generate controllers for each entity in the WebAPI or WEBMVC project. To install this custom template using NuGet run dotnet new -i CleanArchitectureProgramGenerator, then create a Project based on the Template using dotnet new CleanArchitectureProgramGenerator - n ProjectName </Description>
+	<Description>This is a clean architecture style code generator based on .net8.0 which will generate Domain project containing entities; Application project containing repository interfaces, service interfaces, service implementations; Persistence project containg ApplicationDbcontext, repository implementations; it will also generate controllers for each entity in the WebAPI or WEBMVC project. To install this custom template using NuGet run dotnet new install CleanArchitectureProgramGenerator, then create a Project based on the Template using dotnet new CAPG -o ProjectName </Description>
 	<PackageTags>Clean, Architecture, .Net, Core, Template, WebAPI, Web, Repostory, UnitOfWork, Services, Code, Generator</PackageTags>
+	<RepositoryUrl>https://github.com/tcj2001/CleanArchitectureProgramGenerator</RepositoryUrl>
 	<IsPackable>true</IsPackable>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
-	<Version>1.0.5</Version>
 	<TransformOnBuild>false</TransformOnBuild>
 	<IncludeContentInPack>true</IncludeContentInPack>
 	<Title>Clean Architecture Program Generator for WebApi or WebMVC using EntityFrame work</Title>
@@ -56,18 +58,70 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Clean Architecture WebMVC Generator.tt</DependentUpon>
     </None>
-    <None Update="README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="T4Helper.ttinclude">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
+		<Content Include="Clean Architecture Database Access Generator.tt">
+			<Generator>TextTemplatingFileGenerator</Generator>
+			<LastGenOutput>Clean Architecture Database Access Generator.txt</LastGenOutput>
+		</Content>
+		<Content Include="Clean Architecture WebAPI Generator.tt">
+			<Generator>TextTemplatingFileGenerator</Generator>
+			<LastGenOutput>Clean Architecture WebAPI Generator.txt</LastGenOutput>
+		</Content>
+	  <Content Include="Clean Architecture WebMVC Generator.tt">
+		  <Generator>TextTemplatingFileGenerator</Generator>
+		  <LastGenOutput>Clean Architecture WebAPI Generator.txt</LastGenOutput>
+	  </Content>
+	  <Content Include="T4Helper.ttinclude">
+			<Generator>TextTemplatingFileGenerator</Generator>
+			<LastGenOutput>T4Helper.cs</LastGenOutput>
+		</Content>
+  </ItemGroup>
+
+  <ItemGroup>
+		<None Include="README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+  </ItemGroup>
+
+  <ItemGroup>
+		<Content Include="**\*" Exclude="**\bin\**;**\obj\**;.vs\**;.git\**;*.txt;*.cs; *.sln;_images\**;" />
+		<Compile Remove="**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="T4Helper.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>T4Helper.ttinclude</DependentUpon>
+    </Compile>
+  </ItemGroup>	
+
+  <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
+
+	<ItemGroup>
+		<Content Update="Clean Architecture Database Access Generator.tt">
+			<LastGenOutput>Clean Architecture Database Access Generator.txt</LastGenOutput>
+			<Generator>TextTemplatingFileGenerator</Generator>
+		</Content>
+		<Content Update="Clean Architecture WebAPI Generator.tt">
+			<LastGenOutput>Clean Architecture WebAPI Generator.txt</LastGenOutput>
+		</Content>
+		<Content Update="Clean Architecture WebMVC Generator.tt">
+			<LastGenOutput>Clean Architecture WebMVC Generator.txt</LastGenOutput>
+			<Generator>TextTemplatingFileGenerator</Generator>
+		</Content>
+		<Content Update="T4Helper.ttinclude">
+			<LastGenOutput>T4Helper.cs</LastGenOutput>
+			<Generator>TextTemplatingFileGenerator</Generator>
+		</Content>
+	</ItemGroup>	
 
 </Project>
