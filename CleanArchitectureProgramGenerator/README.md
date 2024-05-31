@@ -1,5 +1,5 @@
 ﻿# Clean Architecture Style Code Generator  
-This is a .Net Core Clean Architecture style code generator which will generate Domain project containing entities; Application project containing repository interfaces, service interfaces, service implementations; Persistence project containg ApplicationDbcontext, repository implementations; it will also generate controllers for each entity in the WebAPI or WEBMVC project.  
+This is a .Net8.0 Clean Architecture style code generator which will generate Domain project containing entities; Application project containing repository interfaces, service interfaces, service implementations; Persistence project containg ApplicationDbcontext, repository implementations; it will also generate controllers for each entity in the WebAPI or WEBMVC project.  
 
 
 ---
@@ -16,13 +16,13 @@ This is a .Net Core Clean Architecture style code generator which will generate 
 ---
 # Getting Started
 This is a NuGet package that should be installed as a template in dotnet cli.  
-You can browse this package using manage NuGet packages by searching for "Thomson Mathews" or "Clean_Architecture_Program_Generator_for_CSharp_and_NET6"  
-![Imgur](https://i.imgur.com/9N0loaV.png)  
-This will install two template files in your project.  
+You can browse this package using manage NuGet packages by searching for "Thomson Mathews" or "CleanArchitectureProgramGenerator"  
+![Imgur](https://i.imgur.com/OZQPWBX.png)  
+This will install three template files in your project.  
 [Clean Architecture Database Access Generator.tt](#clean-architecture-database-access-generator.tt)  
 [Clean Architecture WebAPI Generator.tt](#clean-architecture-webapi-generator.tt)  
 [Clean Architecture WebMVC Generator.tt](#clean-architecture-webmvc-generator.tt)  
-![Imgur](https://i.imgur.com/tSuZX6y.png)
+![Imgur](https://i.imgur.com/q4Y6HcW.png)
 
 Once these template files are installed.   
 
@@ -30,10 +30,10 @@ Run **Clean Architecture Database Access Generator.tt** template by right clicki
 ![Imgur](https://i.imgur.com/MpsMt8f.png) 
 
 This will generate the following projects.  
-![Imgur](https://i.imgur.com/qsjnhqG.png)
+![Imgur](https://i.imgur.com/F913Fx4.png)
 Now define entities in the Domain Project entities folder using code first approach or database first approach and ApplicationDbContext in Persistence project context folder.  
-![Imgur](https://i.imgur.com/G1zoCm5.png)
-**Run Clean Architecture Database Access Generator.tt again** to generate all repositories, services for the each entity.  
+![Imgur](https://i.imgur.com/Ul0NKnH.png)
+**Run Clean Architecture Database Access Generator.tt again** to generate all repositories, services for the each entity that was added in the previous step.  
 
 **Run Clean Architecture WebAPI Generator.tt** to generate API controllers in WebAPI project.   
 
@@ -49,25 +49,25 @@ if more entities are added, just run all these three transformation again, that'
 ## Clean Architecture Database Access Generator.tt
 This template will generate 4 projects:  
 Domain, Application, Persistence, Startup.  
-![Imgur](https://i.imgur.com/qsjnhqG.png) 
+![Imgur](https://i.imgur.com/F913Fx4.png)
 
 **Domain Project:**  
-Define all entities in Entities folder, either using code first approach or database approach, Exceptions folder defines some basic useful exceptions that can be used in global error handling.  
-![Imgur](https://i.imgur.com/CASrxLn.png)
+Define all entities in Entities folder, either using code first approach or database approach, Exceptions folder defines some basic useful exceptions that can be used in global error handling. This project also refers to the latest Microsoft EntityFramework 
+![Imgur](https://i.imgur.com/l9vUPg0.png)
 
 **Application Project**  
 Defines Interface for ServiceManager, Services in the ServiceInterfaces folder, implementation of ServiceManager and Services in Services folder, interfaces for RepositoryManager, GenericRepository, Repositories and UnitOfWork in RepositoryInterface folder.  
-![Imgur](https://i.imgur.com/yNEeYTf.png)
+![Imgur](https://i.imgur.com/6YmGnbF.png)
 
 **Persistence Project:**     
 ApplicationDbContext should be defined or generated using Entity Framework in the context folder, Repositories folder contains GenericRepository, Repositories, RepositoryManager and UnitOfWork implementation.  
-![Imgur](https://i.imgur.com/4vpr121.png)
+![Imgur](https://i.imgur.com/qbu36A0.png)
 
-**Startup Projects:**  
+**Startup Project:**  
 This is a console application that will create a Generic Host which will help in dependency injection, here ApplicationDbContext is added to the ServiceCollection, this project will help you to run Entity Framework commands to do entity migrations to a database or generate entities and ApplicationDbContext from existing database. It also has a appsettings.json file containing the connection string.  
-![Imgur](https://i.imgur.com/kMkKoIn.png)  
+![Imgur](https://i.imgur.com/trueaY6.png)  
 
-Startup project is only used to run Entity Framework commands with out a WebAPI project and is not required if WebAPI project is generated.  
+Startup project is only used to run Entity Framework commands with out a WebAPI project and Startup project is not required if WebAPI project is generated.  
 
 *Once you add more entities, you can **run this template again to generate** repository interfaces for the new Entities in the Domain Project, repository implementation for the new Entities in Persistence Project and Services and its Service interfaces for the new Entities in the Application Project*.  
 
@@ -76,11 +76,11 @@ Startup project is only used to run Entity Framework commands with out a WebAPI 
 This template will open a dialog box, select "**ASP.NET Core Web API**" project template to generate a initial skelton of Web API project which will be modified by the "Clean Architecture WebAPI Generator template" 
 
 This template will generate open a dialog box, select ASP.NET Core WebAPI project and it will create a project named **WebAPI**
-![Imgur](https://i.imgur.com/V7yfIId.png)  
+![Imgur](https://i.imgur.com/NIWie2l.png)  
 
 **WebAPI Project:**  
 This contains controllers and other required classes.  
-![Imgur](https://i.imgur.com/YcDbpv4.png)  
+![Imgur](https://i.imgur.com/FQvYm1E.png)  
 
 **Controller Folder:**  
 Contains generated controller for each entities defined in Domain project.  
@@ -99,8 +99,8 @@ Contains classes structures to read from appsettings.json file.
 
 **Program.cs**
 This connect all the wiring between the projects.
-![Imgur](https://i.imgur.com/QBq9PMJ.png)  
-![Imgur](https://i.imgur.com/v1JkFNe.png)  
+![Imgur](https://i.imgur.com/zxu0z6b.png)  
+![Imgur](https://i.imgur.com/c78Vu0r.png)  
 
 *Once you add more entities, you can **run this template again to generate** controllers for the new Entities in the WebAPI Project.*  
 
@@ -108,11 +108,11 @@ This connect all the wiring between the projects.
 ## Clean Architecture WebMVC Generator.tt
 This template will open a dialog box, select "**ASP.NET Core Web app (Mode-View-Controller)**" project template to generate a initial skelton of MVC project which will be modified by the "Clean Architecture WebMVC Generator template" 
 it will create a project named **WebAPI**
-![Imgur](https://i.imgur.com/V7yfIId.png)  
+![Imgur](https://i.imgur.com/fh5AqG2.png)  
 
 **WebAPI Project:**  
 This contains controllers and other required classes.  
-![Imgur](https://i.imgur.com/YcDbpv4.png)  
+![Imgur](https://i.imgur.com/aRxJCbS.png)  
 
 **Controller Folder:**  
 Contains generated controller for each entities defined in Domain project.  
@@ -131,10 +131,9 @@ Contains classes structures to read from appsettings.json file.
 
 **Program.cs**
 This connect all the wiring between the projects.
-![Imgur](https://i.imgur.com/rkcn6vl.png) 
+![Imgur](https://i.imgur.com/JvQp9vz.png) 
 
 *Once you add more entities, you can **run this template again to generate** controllers for the new Entities in the WebAPI Project.*  
-
 
 
 ---
@@ -143,37 +142,37 @@ This file contains function used by the above T4Template files.
 
 ---
 ## Github Link
-https://github.com/tcj2001/Clean_Architecture_Program_Generator_for_CSharp_and_NET6  
+https://github.com/tcj2001/CleanArchitectureProgramGenerator  
 
 ---
 ## Installing template from Nuget Package Manager
 From your package manager console.  
-**dotnet new -i Clean_Architecture_Program_Generator_for_CSharp_and_NET6_Solution**  
+**dotnet new install CleanArchitectureProgramGenerator**  
 This will add a new template in your dotnet cli environment.  
-![Imgur](https://i.imgur.com/7Z6Ixu9.png)  
+![Imgur](https://i.imgur.com/4xfUr1Z.png)  
 
-**dotnet new -l**  
+**dotnet new list**  
 you can use the above command to check if the template was installed. 
-![Imgur](https://i.imgur.com/wLcdyyv.png)  
+![Imgur](https://i.imgur.com/3v70m6Q.png)  
 
-**CA_PG_C#_NET6_SOL** is shortname for the template
+**CAPG** is shortname for the template
 
 There are **two way** to use the template.
 
 **First Method**.  
 Go to a directory where you want to make use of the template and type command.   
-**dotnet new CA_PG_C#_NET6_SOL -o YourProjectFolderName** 
-![Imgur](https://i.imgur.com/yqz8I1l.png)  
+**dotnet new CAPG -o yourProjectSolution** 
+![Imgur](https://i.imgur.com/G0WnT58.png)  
 
-This will create a ClassLibrary project named Clean_Architecture_Program_Generator_for_CSharp_and_NET6 within the solution  
-![Imgur](https://i.imgur.com/sBLfNRD.png)
+This will create a ClassLibrary project named CleanArchitectureProgramGenerator within in your project solution  
+![Imgur](https://i.imgur.com/60G7kGd.png)
 
 **Second Method**.  
-When you select new project in visual studio you will see a template named Clean_Architecture_Program_Generator_for_CSharp_and_NET6, if you don't see filter the project type and select Clean Architecture, select this template and create your project.   
-![Imgur](https://i.imgur.com/tlgWJjY.png)  
+When you select new project in visual studio you will see a template named CleanArchitectureProgramGenerator, if you don't see filter the project type and select Clean Architecture, select this template and create your project.   
+![Imgur](https://i.imgur.com/V32Ny3x.png)  
 
 This will create a ClassLibrary project named Clean_Architecture_Program_Generator_for_CSharp_and_NET6 within YourProjectFolderName.    
-![Imgur](https://i.imgur.com/sBLfNRD.png)
+![Imgur](https://i.imgur.com/60G7kGd.png)
   
 ---
 ## How to check if this really works
