@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Thomson Mathews",
+  "classifications": [
+    "Web",
+    "ASP.NET",
+    "Clean Architecture"
+  ],
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "identity": "CleanArchitectureProgramGenerator",
+  "name": "CleanArchitectureProgramGenerator",
+  "shortName": "CAPG",
+  "sourceName": "Clean.Architecture",
+  "preferNameDirectory": false
+}

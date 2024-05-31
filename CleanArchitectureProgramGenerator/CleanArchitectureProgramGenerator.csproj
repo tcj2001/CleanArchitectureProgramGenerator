@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+	<Authors>Thomson Mathews</Authors>
+	<Description>This is a clean architecture style code generator which will generate Domain project containing entities; Application project containing repository interfaces, service interfaces, service implementations; Persistence project containg ApplicationDbcontext, repository implementations; it will also generate controllers for each entity in the WebAPI or WEBMVC project. To install this custom template using NuGet run dotnet new -i CleanArchitectureProgramGenerator, then create a Project based on the Template using dotnet new CleanArchitectureProgramGenerator - n ProjectName </Description>
+	<PackageTags>Clean, Architecture, .Net, Core, Template, WebAPI, Web, Repostory, UnitOfWork, Services, Code, Generator</PackageTags>
+	<IsPackable>true</IsPackable>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+	<Version>1.0.5</Version>
+	<TransformOnBuild>false</TransformOnBuild>
+	<IncludeContentInPack>true</IncludeContentInPack>
+	<Title>Clean Architecture Program Generator for WebApi or WebMVC using EntityFrame work</Title>
+	<Copyright>Thomson Mathews</Copyright>	  
+	  
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include=".template.config\template.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Clean Architecture Database Access Generator.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Clean Architecture Database Access Generator.txt</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Clean Architecture Database Access Generator.txt">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Clean Architecture Database Access Generator.tt</DependentUpon>
+    </None>
+    <None Update="Clean Architecture WebAPI Generator.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Clean Architecture WebAPI Generator.txt</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Clean Architecture WebAPI Generator.txt">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Clean Architecture WebAPI Generator.tt</DependentUpon>
+    </None>
+    <None Update="Clean Architecture WebMVC Generator.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Clean Architecture WebMVC Generator.txt</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Clean Architecture WebMVC Generator.txt">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Clean Architecture WebMVC Generator.tt</DependentUpon>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="T4Helper.ttinclude">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+</Project>
