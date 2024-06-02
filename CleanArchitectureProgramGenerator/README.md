@@ -1,6 +1,8 @@
 ﻿# Clean Architecture Style Code Generator  
 This is a .Net8.0 Clean Architecture style code generator which will generate Domain project containing entities; Application project containing repository interfaces, service interfaces, service implementations; Persistence project containg ApplicationDbcontext, repository implementations; it will also generate controllers for each entity in the WebAPI or WEBMVC project.  
 
+**A working WEBAPI and WEBMVC project pointing a database with multiple tables can be generated and smoke tested under 4 minutes.**
+
  
 ---
 ## Table of Contents

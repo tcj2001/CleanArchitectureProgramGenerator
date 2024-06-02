@@ -8,7 +8,7 @@
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	<PackageType>Template</PackageType>
-    <Version>8.0.0</Version>
+    <Version>8.0.1</Version>
 
 	<Authors>Thomson Mathews</Authors>
 	<Description>This is a clean architecture style code generator based on .net8.0 which will generate Domain project containing entities; Application project containing repository interfaces, service interfaces, service implementations; Persistence project containg ApplicationDbcontext, repository implementations; it will also generate controllers for each entity in the WebAPI or WEBMVC project. To install this custom template using NuGet run dotnet new install CleanArchitectureProgramGenerator, then create a Project based on the Template using dotnet new CAPG -o ProjectName </Description>
