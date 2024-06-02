@@ -243,6 +243,7 @@ namespace Persistence
   //define connection here
   "ConnectionStrings": {
     "SqlServerDB": "Server=DESKTOP-GBANT4V; Database=BookStoresDB; Trusted_Connection=True;"
+    //"SqlServerDB": "Server=192.168.2.19; Database=gravity_books; TrustServerCertificate=True; User Id=SA;Password=r00t.R00T;"
   }
 }
 <# OverwriteFile("Startup", "","appsettings.json"); #>
