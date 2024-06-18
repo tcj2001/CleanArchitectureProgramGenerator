@@ -1,0 +1,1502 @@
+﻿<#@ template language="C#" debug="true" hostspecific="true" #>
+<#@ output extension=".txt" #>
+<#@ assembly name="System" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Data.Entity" #>
+<#@ assembly name="EnvDTE" #>
+<#@ import namespace="EnvDTE" #>
+<#@ include file="T4Helper.ttinclude" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Reflection" #>
+<#  
+    ////////////////////////////////////////////////////////
+    // Get defined Entities details and DbContext details //
+    ////////////////////////////////////////////////////////
+    string EntityNamespace = "Domain.Entities"; 
+    string DbContextNamespace = "Persistence.Context";
+    string efContext = "ApplicationDbContext"; //If Context is not in the same namespace rename this to the name of the context
+
+    IServiceProvider serviceProvider = (IServiceProvider)this.Host;
+    DTE dte = serviceProvider.GetService(typeof(DTE)) as DTE; 
+    var project1 = FindProjectByName(dte, "Domain");
+    var classes = FindClasses(project1, EntityNamespace, "");
+    var classNames = classes
+                    .Select(currentClass => currentClass.Name)
+                    .ToList();
+    var project2 = FindProjectByName(dte, "Persistence");
+    var dbcclass = FindClasses(project2, DbContextNamespace, "");
+    var classWithDbContext = dbcclass.FirstOrDefault(currentClass => currentClass.Bases.OfType<CodeElement>().Any(currentBase => currentBase.Name == "DbContext"));
+    if(classWithDbContext != null)
+    {
+        efContext = classWithDbContext.Name;
+    }
+#>
+<#
+	/////////////////////////////////////////////////////////////
+    // define Poject, pageComponent, modules, modulesComponent //
+    /////////////////////////////////////////////////////////////
+    string StartupProject = "AngularProject1";
+    var PaginationPageSize = 15;
+    var page = "appPage";
+    var modal = "appModal";
+    var common = "appCommon";
+    var TCpage = FirstLetterToUpper(page);
+    var pageComponents = new[] {"header","footer","sidebar"};
+    var modules = classNames;
+    var moduleComponents = new[] {"view","create","edit","delete"};
+#>
+<#
+	////////////////////////////// 
+    // Generate environments.ts //
+    //////////////////////////////
+#>
+export const environment = {
+  apiUrl: '/api',
+  user: 'SOMEuser',
+  password: 'SOMEpassword'
+};
+<# OverwriteFile(StartupProject, "/src/environments/","environment.ts"); #>
+<#
+	////////////////////////////////// 
+    // Generate proxy.conf.json.ts //
+    /////////////////////////////////
+#>
+{
+    "/api": {
+        "target": "http://localhost:8085",
+        "secure": false
+    }
+}
+<# OverwriteFile(StartupProject, "/src","proxy.conf.json"); #>
+<#
+	/////////////////////////// 
+    // Generate package.json //
+    //////////////////////////
+#>
+{
+  "name": "angular-project1",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve --proxy-config ./src/proxy.conf.json",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^18.0.0",
+    "@angular/common": "^18.0.0",
+    "@angular/compiler": "^18.0.0",
+    "@angular/core": "^18.0.0",
+    "@angular/forms": "^18.0.0",
+    "@angular/platform-browser": "^18.0.0",
+    "@angular/platform-browser-dynamic": "^18.0.0",
+    "@angular/router": "^18.0.0",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "ngx-pagination": "^6.0.3",
+    "jest-editor-support": "*",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.14.3"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^18.0.3",
+    "@angular/cli": "^18.0.3",
+    "@angular/compiler-cli": "^18.0.0",
+    "@types/jasmine": "~5.1.0",
+    "jasmine-core": "~5.1.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~5.4.2"
+  }
+}
+<# OverwriteFile(StartupProject, "/","package.json"); #>
+<#
+	/////////////////////////// 
+    // Generate angular.json //
+    ///////////////////////////
+#>
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "AngularProject1": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "standalone": false
+        },
+        "@schematics/angular:directive": {
+          "standalone": false
+        },
+        "@schematics/angular:pipe": {
+          "standalone": false
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/angular-project1",
+            "index": "src/index.html",
+            "browser": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],
+            "tsConfig": "tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "node_modules/bootstrap/scss/bootstrap.scss",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css",
+              "src/styles.css"
+            ],
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kB",
+                  "maximumError": "4kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "AngularProject1:build:production"
+            },
+            "development": {
+              "buildTarget": "AngularProject1:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "tsconfig.spec.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "src/styles.css"
+            ],
+            "scripts": [],
+            "karmaConfig": "karma.conf.js"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": false
+  }
+}
+<# OverwriteFile(StartupProject, "/","angular.json"); #>
+<#
+	////////////////////////////////////
+    // Generate search.pipe.ts //
+    ///////////////////////////////////
+#>
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'search'
+})
+export class SearchPipe implements PipeTransform {
+
+  transform(value: any, args?: any): any {
+    if (!value) return null;
+    if (!args) return value;
+
+    args = args.toLowerCase();
+
+    return value.filter((item: any) => {
+      return JSON.stringify(item).toLowerCase().includes(args);
+    })
+  }
+
+}
+<# OverwriteFile(StartupProject, "src/app/"+common,"search.pipe.ts"); #>
+<#
+	///////////////////////////////
+    // Generate shared.module.ts //
+    //////////////////////////////
+#>
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SearchPipe } from '../<#= common #>/search.pipe';
+
+@NgModule({
+ imports:      [ CommonModule ],
+ declarations: [ SearchPipe ],
+ exports:      [ SearchPipe, CommonModule, FormsModule, ReactiveFormsModule ]
+})
+export class SharedModule { }
+<# OverwriteFile(StartupProject, "src/app/"+common,"shared.module.ts"); #>
+<#
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////
+    // Generate app.module.ts //
+    ////////////////////////////
+#>
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+
+import { <#= TCpage #>Module } from './<#= page #>/<#= page #>.module';
+
+import { HttpClientModule } from '@angular/common/http';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+  ],   
+  imports: [
+    BrowserModule,
+    NgxPaginationModule,
+    AppRoutingModule,
+    <#= TCpage #>Module,
+    HttpClientModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+<# OverwriteFile(StartupProject, "src/app/","app.module.ts"); #>
+
+<#
+    ////////////////////////////////
+    // Generate app.component.css //
+    ////////////////////////////////
+#>
+<# OverwriteFile(StartupProject, "src/app/","app.component.css"); #>
+
+<#
+	/////////////////////////////////
+    // Generate app.component.html //
+    ////////////////////////////////
+#>
+<div class="row grow w-100">
+  <div class="col-12 bg-primary py-3">
+    <app-<#= page #>-header></app-<#= page #>-header>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-none d-md-block bg-primary sidebar">
+        <div class="position-sticky bg-light vh-100">
+          <div class="pt-3">
+            <app-<#= page #>-sidebar></app-<#= page #>-sidebar>
+            <div class="footer fixed-bottom row w-100">
+              <div class="col-md-3 col-lg-2 d-none d-md-block bg-primary">
+                <app-<#= page #>-footer></app-<#= page #>-footer>
+              </div>
+              </div>
+            </div>
+          </div>
+      </nav>
+
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 ">
+        <div class="pt-3">
+          <router-outlet></router-outlet>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+<# OverwriteFile(StartupProject, "src/app/","app.component.html"); #>
+<#
+	///////////////////////////////
+    // Generate app.component.ts //
+    //////////////////////////////
+#>
+import { Component } from '@angular/core';
+import { FormGroup, FormBuilder } from '@angular/forms';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css'
+})
+export class AppComponent {
+    // Application title
+  title = 'AngularProject1';
+
+  // Pagination parameters.
+  p: Number = 1;
+  count: Number = <#= PaginationPageSize #>;
+}
+<# OverwriteFile(StartupProject, "src/app/","app.component.ts"); #>
+<#
+	////////////////////////////////////
+    // Generate app.component.spec.ts //
+    ///////////////////////////////////
+#>
+import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { AppComponent } from './app.component';
+
+describe('AppComponent', () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        RouterTestingModule
+      ],
+      declarations: [
+        AppComponent
+      ],
+    }).compileComponents();
+  });
+
+  it('should create the app', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app).toBeTruthy();
+  });
+
+  it(`should have as title 'AngularProject1'`, () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app.title).toEqual('AngularProject1');
+  });
+
+  it('should render title', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, AngularProject1');
+  });
+});
+<# OverwriteFile(StartupProject, "src/app/","app.component.spec.ts"); #>
+<#
+	////////////////////////////////////
+    // Generate app-routing.module.ts //
+    ////////////////////////////////////
+#>
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+const routes: Routes = [
+<#foreach(string module in modules)
+{
+    var moduleName = module.ToLower();
+    var TCmoduleName = FirstLetterToUpper(moduleName);
+#>
+{ path: '<#= moduleName #>', loadChildren: () => import('./<#= moduleName #>/<#= moduleName #>.module').then(m => m.<#= TCmoduleName #>Module) }, 
+<#
+}
+#>
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+<# OverwriteFile(StartupProject, "src/app/","app-routing.module.ts"); #>
+<#
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////
+    // Generate page.module.ts ///
+    /////////////////////////////
+#>
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+<#foreach(string component in pageComponents)
+{
+    var TCcomponent = FirstLetterToUpper(component);
+#>
+import { <#= TCpage #><#= TCcomponent #>Component } from './<#= page #>-<#= component #>/<#= page #>-<#= component #>.component';
+<#
+}
+#>
+
+@NgModule({
+  declarations: [
+<#foreach(string component in pageComponents)
+{
+    var TCcomponent = FirstLetterToUpper(component);
+#>
+    <#= TCpage #><#= TCcomponent #>Component,
+<#
+}
+#>
+  ],
+  imports: [
+    CommonModule,
+  ],
+  exports: [
+<#foreach(string component in pageComponents)
+{
+    var TCcomponent = FirstLetterToUpper(component);
+#>
+    <#= TCpage #><#= TCcomponent #>Component,
+<#
+}
+#>
+  ]
+})
+export class <#= TCpage #>Module { }
+<# OverwriteFile(StartupProject, "src/app/"+page,page+".module.ts"); #>
+
+<#
+	//////////////////////////////
+    // Generate pageComponents ///
+    //////////////////////////////
+#>
+<#foreach(string component in pageComponents)
+{
+    var TCcomponent = FirstLetterToUpper(component);
+#>
+
+<#
+	///////////////////////////////////////////
+    // Generate <pageComponent>.component.ts //
+    //////////////////////////////////////////
+#>
+import { Component } from '@angular/core';
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { AppComponent } from '../../app.component';
+
+
+@Component({
+  selector: 'app-<#= page #>-<#= component #>',
+  templateUrl: './<#= page #>-<#= component #>.component.html',
+  styleUrl: './<#= page #>-<#= component #>.component.css'
+})
+export class <#= TCpage #><#= TCcomponent #>Component {
+  appComponent: AppComponent= new AppComponent();
+  appComponentTitle = this.appComponent.title;
+}
+<# OverwriteFile(StartupProject, "src/app/"+page+"/"+page+"-"+component,page+"-"+component+".component.ts"); #>
+
+<#
+	/////////////////////////////////////////////
+    // Generate <pageComponent>.component.spec.ts //
+    ////////////////////////////////////////////
+#>
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { <#= TCpage #><#= TCcomponent #>Component } from './<#= page #>-<#= component #>.component';
+
+describe('<#= TCpage #><#= TCcomponent #>Component', () => {
+  let component: <#= TCpage #><#= TCcomponent #>Component;
+  let fixture: ComponentFixture<<#= TCpage #><#= TCcomponent #>Component>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [<#= TCpage #><#= TCcomponent #>Component]
+    })
+    .compileComponents();
+    
+    fixture = TestBed.createComponent(<#= TCpage #><#= TCcomponent #>Component);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+<# OverwriteFile(StartupProject, "src/app/"+page+"/"+page+"-"+component,page+"-"+component+".component.spec.ts"); #>
+
+<#
+	///////////////////////////////////////////
+    // Generate <pageComponent>.component.css /////
+    //////////////////////////////////////////
+#>
+<# OverwriteFile(StartupProject, "src/app/"+page+"/"+page+"-"+component,page+"-"+component+".component.css"); #>
+
+<#
+	/////////////////////////////////////////////
+    // Generate <pageComponent>.component.html /////
+    ////////////////////////////////////////////
+#>
+<# if(component == "header") { #>
+<h1><p class="text-center">{{ appComponentTitle }}</p></h1>
+<# 
+} 
+#>
+
+<# if(component == "sidebar") { #>
+<ul>
+  <li><a class="active" href="/">Home</a></li>
+<#foreach(string module in modules)
+{
+    var moduleName = module.ToLower();
+    var TCmoduleName = FirstLetterToUpper(moduleName);
+#>
+  <li><a href="/<#= moduleName #>"><#= moduleName #></a></li>
+<#
+}
+#>
+</ul>
+<# 
+} 
+#>
+
+<# if(component == "footer") { #>
+<p class="text-center">Copyright © 2024 Thomson Mathews</p>
+<# 
+} 
+#>
+
+<# OverwriteFile(StartupProject, "src/app/"+page+"/"+page+"-"+component,page+"-"+component+".component.html"); #>
+
+<#
+}
+#>
+
+
+<#
+	//////////////////////
+    // Generate modal ///
+    /////////////////////
+#>
+<#
+	///////////////////////////////////////////
+    // Generate <modal>.component.ts //
+    //////////////////////////////////////////
+#>
+import {  Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { ModalService } from './<#= modal #>.service'
+
+export class ModalConfig {
+  title?: string = '';
+  description?: string = '';
+  route?: string = '';
+  discard?: Function = () => {};
+
+  constructor(
+    title: string = '',
+    description: string = '',
+    route: string = '',
+    discard = null
+  ) {
+    if (title) this.title = title;
+    if (route) this.route = route;
+    if (description) this.description = description;
+    if (discard) this.discard = discard;
+  }
+}
+
+@Component({
+  selector: 'app-modal',
+  templateUrl: './<#= modal #>.component.html',
+  styleUrls: ['./<#= modal #>.component.css'],
+  imports: [CommonModule],
+  standalone: true,
+})
+export class ModalComponent implements OnInit {
+  constructor(
+    private modalService: ModalService,
+    private router: Router,
+  ) {}
+
+  get open() {
+    return this.modalService.isOpen;
+  }
+
+  get config() {
+    return this.modalService.config;
+  }
+
+  discardWrapper(event: Event) {
+    this.modalService.isOpen = false;
+    if (this.config.discard) {
+      this.config.discard(event);
+      this.router.navigate([this.config.route]);
+    }
+  }
+
+  ngOnInit() {}
+}
+<# OverwriteFile(StartupProject, "src/app/"+modal,modal+".component.ts"); #>
+
+<#
+	///////////////////////////////////////////
+    // Generate <modal>.component.css /////
+    //////////////////////////////////////////
+#>
+<# OverwriteFile(StartupProject, "src/app/"+modal,modal+".component.css"); #>
+
+<#
+	/////////////////////////////////////////////
+    // Generate <modal>.component.html /////
+    ////////////////////////////////////////////
+#>
+<div
+  class="modal"
+  tabindex="-1"
+  role="dialog"
+  *ngIf="open"
+  style="display:block;"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ config.title }}</h5>
+      </div>
+      <div class="modal-body">
+        <p>{{ config.description }}</p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-dismiss="modal"
+          (click)="discardWrapper($event)"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<# OverwriteFile(StartupProject, "src/app/"+modal,modal+".component.html"); #>
+
+<#
+	////////////////////////////////////
+    // Generate <modal>.service.ts /////
+    ///////////////////////////////////
+#>
+import { Injectable } from '@angular/core';
+import { ModalConfig } from './<#= modal #>.component';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ModalService {
+  isOpen = false;
+  config = new ModalConfig();
+
+  constructor() {}
+
+  open(config: ModalConfig) {
+    this.config = { ...this.config, ...config };
+    this.isOpen = true;
+  }
+}
+<# OverwriteFile(StartupProject, "src/app/"+modal,modal+".service.ts"); #>
+
+<#
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////
+    // Generate angular modules foreach entities //
+    //////////////////////////////////////////////
+#>
+<#
+foreach(string module in modules)
+{
+    var moduleName = module.ToLower();
+    var TCmoduleName = FirstLetterToUpper(moduleName);
+    var properClassName = GetProperClassName(module);
+    (var keyType, var key, var keyValue, var checkKeyEqual, var entityKeys, var entityValue, var httpKeys, var asprouteItem, var asprouteModel, var aspfors)
+    = GetKeyAndTypeStrings(dte,project1,EntityNamespace+"."+properClassName);
+    var propList = ProperitesOfClass(dte,project1,EntityNamespace+"."+properClassName);
+    var properties = ClassProperites(dte,project1,EntityNamespace+"."+properClassName);
+#>
+<#
+	/////////////////////////////////
+    // Generate <module>.module.ts //
+    /////////////////////////////////
+#>
+import { NgModule } from '@angular/core';
+import { NgxPaginationModule } from 'ngx-pagination';
+
+import { SharedModule } from '../<#= common #>/shared.module';
+
+import { <#= TCmoduleName #>RoutingModule } from './<#= moduleName #>-routing.module';
+import { <#= TCmoduleName #>Component } from './<#= moduleName #>.component';
+
+import { ModalComponent } from '../<#= modal #>/<#= modal #>.component';
+
+<#foreach(string component in moduleComponents)
+{
+    var TCcomponent = FirstLetterToUpper(component);
+#>
+import { <#= TCmoduleName #><#= TCcomponent #>Component } from './<#= moduleName #>-<#= component #>/<#= moduleName #>-<#= component #>.component';
+<#
+}
+#>
+
+@NgModule({
+  declarations: [
+    <#= TCmoduleName #>Component,
+<#foreach(string component in moduleComponents)
+{
+    var TCcomponent = FirstLetterToUpper(component);
+#>
+    <#= TCmoduleName #><#= TCcomponent #>Component,
+<#
+}
+#>
+  ],
+  imports: [
+    SharedModule,
+    NgxPaginationModule,
+    ModalComponent,
+    <#= TCmoduleName #>RoutingModule,
+  ],
+  exports: [
+<#foreach(string component in moduleComponents)
+{
+    var TCcomponent = FirstLetterToUpper(component);
+#>
+    <#= TCmoduleName #><#= TCcomponent #>Component,
+<#
+}
+#>
+  ]
+})
+export class <#= TCmoduleName #>Module { }
+<# OverwriteFile(StartupProject, "src/app/"+moduleName,moduleName+".module.ts"); #>
+
+<#
+	/////////////////////////////////////////
+    // Generate <module>.routing.module.ts //
+    /////////////////////////////////////////
+#>
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+import { <#= TCmoduleName #>Component } from './<#= moduleName #>.component';
+<#foreach(string component in moduleComponents)
+{
+    var TCcomponent = FirstLetterToUpper(component);
+#>
+import { <#= TCmoduleName #><#= TCcomponent #>Component } from './<#= moduleName #>-<#= component #>/<#= moduleName #>-<#= component #>.component';
+<#
+}
+#>
+
+const routes: Routes = [
+  { path: '', component: <#= TCmoduleName #>Component },
+<#foreach(string component in moduleComponents)
+{
+    var TCcomponent = FirstLetterToUpper(component);
+#>
+  { path: '<#= moduleName #>-<#= component #>', component: <#= TCmoduleName #><#= TCcomponent #>Component },
+<#
+}
+#>
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+})
+export class <#= TCmoduleName #>RoutingModule { }
+<# OverwriteFile(StartupProject, "src/app/"+moduleName,moduleName+"-"+"routing.module.ts"); #>
+
+<#
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Generate <module>.component.ts //
+    ////////////////////////////////////
+#>
+import { FormGroup, FormBuilder } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { <#= module #> } from '../<#= module.ToLower() #>/<#= module.ToLower() #>.interface';
+import { <#= module #>Service } from '../<#= module.ToLower() #>/<#= module.ToLower() #>.service';
+
+@Component({
+  selector: 'app-<#= moduleName #>',
+  templateUrl: './<#= moduleName #>.component.html',
+  styleUrl: './<#= moduleName #>.component.css'
+})
+export class <#= TCmoduleName #>Component implements OnInit{
+  <#= module.ToLower()#>: <#= module #>[] = [];
+  // Pagination parameters.
+  p: number = 1;
+  count: number = <#= PaginationPageSize #>;
+
+  constructor(private readonly <#= moduleName #>Service: <#= module #>Service) {}
+
+  ngOnInit(): void {
+    //get all  
+    this.<#= moduleName #>Service.getAll<#= module #>().subscribe({
+      next: (<#= module.ToLower()#>: <#= module #>[]) => {
+        this.<#= module.ToLower()#> = <#= module.ToLower()#>;
+        console.log(<#= module.ToLower()#>, 'res');
+      },
+      error: (e: string) => console.error(e)
+    });
+  }
+
+  OnPageChange(event: number): void {
+    this.p = event;
+  }
+
+  searchText = '';
+
+}
+<# OverwriteFile(StartupProject, "src/app/"+moduleName,moduleName+".component.ts"); #>
+
+<#
+	/////////////////////////////////////////
+    // Generate <module>.component.spec.ts //
+    ////////////////////////////////////////
+#>
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { <#= TCmoduleName #>Component } from './<#= moduleName #>.component';
+
+describe('<#= TCmoduleName #>Component', () => {
+  let component: <#= TCmoduleName #>Component;
+  let fixture: ComponentFixture<<#= TCmoduleName #>Component>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [<#= TCmoduleName #>Component]
+    })
+    .compileComponents();
+    
+    fixture = TestBed.createComponent(<#= TCmoduleName #>Component);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+<# OverwriteFile(StartupProject, "src/app/"+moduleName,moduleName+".component.spec.ts"); #>
+
+<#
+	////////////////////////////////////////
+    // Generate <module>.component.css /////
+    ///////////////////////////////////////
+#>
+<# OverwriteFile(StartupProject, "src/app/"+moduleName+"/",moduleName+".component.css"); #>
+<#
+	/////////////////////////////////////////
+    // Generate <module>.interface.ts /////
+    /////////////////////////////////////////
+#>
+<#
+foreach(CodeProperty property in properties)
+{
+if(property.Type.AsString.Contains(EntityNamespace))
+{
+  var entity=property.Type.AsString.Contains(EntityNamespace)?property.Type.AsString.Split('.').Last():"";
+  entity = entity.Contains(">")?entity.Split('>')[0]:entity;
+#>
+import { <#= entity #> } from '../<#= entity.ToLower() #>/<#= entity.ToLower() #>.interface';
+<#
+}
+}
+#>
+
+export interface <#= module #> {
+<#
+foreach(CodeProperty property in properties)
+{
+var typeScriptType = GetTypeScriptType(EntityNamespace, property.Name, property.Type.AsString); 
+var prop=property.Type.AsString.Contains("?")?property.Name+"?":property.Name;
+var lprop=FirstLetterToLower(prop);
+#>
+  <#= lprop #>: <#= typeScriptType #>; // <#= property.Type.AsString #>
+<#
+}
+#>
+}
+<# OverwriteFile(StartupProject, "src/app/"+moduleName+"/",moduleName+".interface.ts"); #>
+
+
+<#
+	/////////////////////////////////////////
+    // Generate <module>.service.ts /////
+    /////////////////////////////////////////
+#>
+import { HttpClient } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
+import { Injectable, Type } from '@angular/core';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { <#= module #> } from '../<#= module.ToLower() #>/<#= module.ToLower() #>.interface';
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type':  'application/json',
+    'Authorization': 'Basic ' + btoa(environment.user+':'+environment.password)
+  })
+};
+
+@Injectable({ providedIn: 'root' })
+export class <#= module #>Service {
+  private readonly API_URL = environment.apiUrl+'/<#= module #>';
+  constructor( private readonly httpClient: HttpClient )
+  { }
+
+<#
+var keyList = "";
+var keyList2 = "";
+var KeyListWithType = "";
+foreach(string k in key.Split(','))
+{
+	keyList += FirstLetterToLower(k)+"+','+";
+	keyList2 += "\"" + k + "=\"+" + FirstLetterToLower(k) + "+\"&\"+";
+	KeyListWithType += FirstLetterToLower(k) + ": any, ";
+}
+keyList = keyList.Substring(0, keyList.Length - 5);
+keyList2 = keyList2.Substring(0, keyList2.Length - 5);
+KeyListWithType = KeyListWithType.TrimEnd(',');
+#>
+
+  getAll<#= module #>(): Observable<any[]> {
+    return this.httpClient.get<any[]>(this.API_URL, httpOptions);
+  }
+
+  get<#= module #>(<#= KeyListWithType #>): Observable<any> {
+    return this.httpClient.get<any>(this.API_URL + '/' + <#=keyList #>, httpOptions);
+  }
+
+  create<#= module #>(body: any): Observable<any> {
+    return this.httpClient.post<any>(this.API_URL, body, httpOptions);
+  }
+
+  update<#= module #>(<#= KeyListWithType #> body: any): Observable<any> {
+    return this.httpClient.put<any>(this.API_URL+ '?' + <#=keyList2 #>, body, httpOptions);
+  }
+
+  delete<#= module #>(<#= KeyListWithType #>): Observable<any> {
+    return this.httpClient.delete<any>(this.API_URL + '/' + <#=keyList #>, httpOptions);
+  }
+}
+<# OverwriteFile(StartupProject, "src/app/"+moduleName+"/",moduleName+".service.ts"); #>
+
+<#
+	/////////////////////////////////////////
+    // Generate <module>.component.html /////
+    /////////////////////////////////////////
+#>
+<h1 class="text-center"><#= module #></h1>
+<div class="container">
+ <button routerLink="../<#= moduleName #>/<#= moduleName #>-create" class="btn btn-primary">Create</button>
+ <input class="form-control" type="text" placeholder="Search" [(ngModel)]="searchText">
+ <table class="table table-hover table-striped">
+    <thead class="thead-dark">
+        <tr>
+<#
+foreach(CodeProperty property in properties)
+{
+if(!property.Type.AsString.Contains(EntityNamespace))
+{
+#>
+            <th>
+                <#= property.Name #>
+            </th>
+<#
+}
+}
+#>
+ 	    </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor = "let item of <#= moduleName #> | search: searchText | paginate: { itemsPerPage: count, currentPage: p }">
+<#
+foreach(CodeProperty property in properties)
+{
+if(!property.Type.AsString.Contains(EntityNamespace))
+{
+var lprop=FirstLetterToLower(property.Name);
+#>
+            <td>
+                {{ item.<#= lprop #> }}
+            </td>
+<#
+}
+}
+#>
+            <td>
+                <button routerLink="../<#= moduleName #>/<#= moduleName #>-view" [queryParams]=item type="button" class="btn btn-secondary">View</button>
+            </td>
+            <td>
+                <button routerLink="../<#= moduleName #>/<#= moduleName #>-edit" [queryParams]=item type="button" class="btn btn-success">Edit</button>
+            </td>
+            <td>
+                <button routerLink="../<#= moduleName #>/<#= moduleName #>-delete" [queryParams]=item type="button" class="btn btn-danger">Delete</button>
+            </td>
+ 	    </tr>
+    </tbody>
+ </table>
+ <!--Including the pagination control.-->
+  <div class="text-right">
+    <pagination-controls (pageChange)="OnPageChange($event)"></pagination-controls>
+  </div>
+</div>
+<# OverwriteFile(StartupProject, "src/app/"+moduleName+"/",moduleName+".component.html"); #>
+
+<#
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Generate moduleComponents ////
+    ////////////////////////////////
+#>
+<#foreach(string component in moduleComponents)
+{
+    var TCcomponent = FirstLetterToUpper(component);
+#>
+<#
+	///////////////////////////////////////////
+    // Generate <component>.component.ts //
+    //////////////////////////////////////////
+#>
+import { Component } from '@angular/core';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
+import { FormGroup, FormBuilder, FormControl,  Validators } from '@angular/forms';
+
+import { <#= module #> } from '../<#= moduleName #>.interface';
+import { <#= module #>Service } from '../<#= moduleName #>.service';
+
+import { ModalService } from '../../appModal/appModal.service';
+
+@Component({
+  selector: 'app-<#= moduleName #>-<#= component #>',
+  templateUrl: './<#= moduleName #>-<#= component #>.component.html',
+  styleUrl: './<#= moduleName #>-<#= component #>.component.css'
+})
+
+export class <#= TCmoduleName #><#= TCcomponent #>Component {
+  paramMap!: any;
+  <#= component #>Form!: FormGroup;
+  modal: boolean = false;
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private <#= moduleName #>Service: <#= module #>Service,
+    private formBuilder: FormBuilder,
+    private modalService: ModalService
+  ) { }
+
+  ngOnInit() {  
+    // read query params
+    this.route.queryParamMap.subscribe(
+      (paramMap) => {
+        this.paramMap = paramMap;
+      }
+    );
+
+<# if(component == "view" | component == "delete" ) { #>
+    //get method
+    this.<#= moduleName #>Service.get<#= module #>(
+<# foreach(string k in key.Split(',')) { #>
+      this.paramMap.get('<#= FirstLetterToLower(k) #>'),
+<# } #>    
+    ).subscribe({
+    next: (<#= moduleName #>: <#= module #>) => {
+      this.<#= component #>Form = new FormGroup({
+      panel : new FormGroup({ 
+<# 
+foreach(CodeProperty property in properties) {
+if(!property.Type.AsString.Contains(EntityNamespace))
+{
+#>
+        <#= FirstLetterToLower(property.Name) #> : new FormControl({value: <#= moduleName #>.<#= FirstLetterToLower(property.Name) #>, disabled: true}),
+<# } } #>
+        })
+      });
+      console.log(<#= moduleName #>, 'res');
+    },
+    error: (e: string) => console.error(e)
+  });
+<#
+}
+#>
+<# if(component == "edit" ) { #>
+    //get method
+    this.<#= moduleName #>Service.get<#= module #>(
+<#
+foreach(string k in key.Split(','))
+{
+#>
+      this.paramMap.get('<#= FirstLetterToLower(k) #>'),
+<# } #>    
+    ).subscribe({
+    next: (<#= moduleName #>: <#= module #>) => {
+      this.<#= component #>Form = new FormGroup({
+        panel : new FormGroup({ 
+<#
+foreach(CodeProperty property in properties)
+{
+if(!property.Type.AsString.Contains(EntityNamespace))
+{
+if((key.Split(',')).Contains(property.Name))
+{
+#>
+          <#= FirstLetterToLower(property.Name) #> : new FormControl({value: <#= moduleName #>.<#= FirstLetterToLower(property.Name) #>, disabled: true}),
+<# 
+}
+else
+{
+#>
+          <#= FirstLetterToLower(property.Name) #> : new FormControl({value: <#= moduleName #>.<#= FirstLetterToLower(property.Name) #>, disabled: false}),
+<# 
+} 
+} 
+} 
+#>
+        })
+      });
+      console.log(<#= moduleName #>, 'res');
+    },
+    error: (e: string) => console.error(e)
+  });
+<# } #>
+<# if(component == "create" ) { #>
+    this.<#= component #>Form = new FormGroup({
+      panel : new FormGroup({ 
+<#
+foreach(CodeProperty property in properties)
+{
+if(!property.Type.AsString.Contains(EntityNamespace))
+{
+#>
+        <#= FirstLetterToLower(property.Name) #> : new FormControl({value: "", disabled: false}),
+<# 
+} 
+} 
+#>
+      })
+    });
+<# 
+} 
+#>
+  }
+
+  submitTask()
+  {
+<# if(component == "view" ) { #>
+    console.log(this.<#= component #>Form.value)
+<# } #>
+<# if(component == "delete" ) { #>
+    //delete method
+    this.<#= moduleName #>Service.delete<#= module #>(
+<#
+foreach(string k in key.Split(','))
+{
+#>
+      this.deleteForm.get(['panel','<#= FirstLetterToLower(k) #>'])?.value,
+<#
+}
+#>    
+    ).subscribe({
+      next: response => {
+        this.modal=true;
+        this.modalService.open({
+          title: 'Success',
+          description: response.message,
+          route: '/<#= moduleName #>',
+        });        
+        console.log(response);
+      },
+      error: err => {
+        this.modal=true;
+        this.modalService.open({
+          title: 'Error',
+          description: err.error.error,
+          route: '/<#= moduleName #>',
+        });        
+        console.error(err.error);
+      },
+      complete: () => {
+      }
+    });
+<# } #>
+<# if(component == "create" ) { #>
+    //create method
+    var json = {
+<#
+foreach(CodeProperty property in properties)
+{
+if(!property.Type.AsString.Contains(EntityNamespace))
+{
+#>
+        "<#= FirstLetterToLower(property.Name) #>" : this.createForm.get(['panel','<#= FirstLetterToLower(property.Name) #>'])?.value,
+<# 
+} 
+} 
+#>
+    };
+    this.<#= moduleName #>Service.create<#= module #>(json
+    ).subscribe({
+      next: response => {
+        this.modal=true;
+        this.modalService.open({
+          title: 'Success',
+          description: response.message,
+          route: '/<#= moduleName #>',
+        });        
+        console.log(response);
+      },
+      error: err => {
+        this.modal=true;
+        this.modalService.open({
+          title: 'Error',
+          description: err.error.error,
+          route: '/<#= moduleName #>',
+        });        
+        console.error(err.error);
+      },
+      complete: () => {
+      }
+    });
+<# } #>
+<# if(component == "edit" ) { #>
+    //edit method
+    var json = {
+<#
+foreach(CodeProperty property in properties)
+{
+if(!property.Type.AsString.Contains(EntityNamespace))
+{
+#>
+        "<#= FirstLetterToLower(property.Name) #>" : this.editForm.get(['panel','<#= FirstLetterToLower(property.Name) #>'])?.value,
+<# 
+} 
+} 
+#>
+    };
+    this.<#= moduleName #>Service.update<#= module #>(
+<#
+foreach(string k in key.Split(','))
+{
+#>
+      this.editForm.get(['panel','<#= FirstLetterToLower(k) #>'])?.value,
+<#
+}
+#> 
+      json
+    ).subscribe({
+      next: response => {
+        this.modal=true;
+        this.modalService.open({
+          title: 'Success',
+          description: response.message,
+          route: '/<#= moduleName #>',
+        });        
+        console.log(response);
+      },
+      error: err => {
+        this.modal=true;
+        this.modalService.open({
+          title: 'Error',
+          description: err.error.error,
+          route: '/<#= moduleName #>',
+        });        
+        console.error(err.error);
+      },
+      complete: () => {
+      }
+    });
+<# } #>
+
+  }
+}
+<# OverwriteFile(StartupProject, "src/app/"+moduleName+"/"+moduleName+"-"+component,moduleName+"-"+component+".component.ts"); #>
+
+<#
+	/////////////////////////////////////////////
+    // Generate <component>.component.spec.ts //
+    ////////////////////////////////////////////
+#>
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { <#= TCmoduleName #><#= TCcomponent #>Component } from './<#= moduleName #>-<#= component #>.component';
+
+describe('OrderstatusIndexComponent', () => {
+  let component: <#= TCmoduleName #><#= TCcomponent #>Component;
+  let fixture: ComponentFixture<<#= TCmoduleName #><#= TCcomponent #>Component>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [<#= TCmoduleName #><#= TCcomponent #>Component]
+    })
+    .compileComponents();
+    
+    fixture = TestBed.createComponent(<#= TCmoduleName #><#= TCcomponent #>Component);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+<# OverwriteFile(StartupProject, "src/app/"+moduleName+"/"+moduleName+"-"+component,moduleName+"-"+component+".component.spec.ts"); #>
+
+<#
+	///////////////////////////////////////////
+    // Generate <component>.component.css /////
+    //////////////////////////////////////////
+#>
+<# OverwriteFile(StartupProject, "src/app/"+moduleName+"/"+moduleName+"-"+component,moduleName+"-"+component+".component.css"); #>
+
+<#
+	/////////////////////////////////////////////
+    // Generate <components>.component.html /////
+    ////////////////////////////////////////////
+#>
+<h1 class="text-center"><#= module #></h1>
+<#
+if(component == "create")
+{
+#>
+<form [formGroup]="createForm" (submit)="submitTask()">
+    <div formGroupName="panel">
+<#
+foreach(CodeProperty property in properties)
+{
+if(!property.Type.AsString.Contains(EntityNamespace))
+{
+var lprop=FirstLetterToLower(property.Name);
+#>
+        <label for="<#= lprop #>" class="form-label"><#= lprop #></label>
+        <input type="text" class="form-control" formControlName="<#= lprop #>" id="<#= lprop #>" placeholder="<#= lprop #>">
+<#
+}
+}
+#>
+        <button type="submit" class="btn btn-primary">Create</button>
+        &nbsp;
+        <button routerLink=".." type="button" class="btn btn-secondary">Cancel</button>
+    </div>
+</form>
+<#
+}
+else if(component == "edit")
+{
+#>
+<form [formGroup]="editForm" (submit)="submitTask()">
+    <div formGroupName="panel">
+<#
+foreach(CodeProperty property in properties)
+{
+if(!property.Type.AsString.Contains(EntityNamespace))
+{
+var lprop=FirstLetterToLower(property.Name);
+#>
+        <label for="<#= lprop #>" class="form-label"><#= lprop #></label>
+        <input type="text" class="form-control" formControlName="<#= lprop #>" id="<#= lprop #>" placeholder="<#= lprop #>">
+<#
+}
+}
+#>
+        <button type="submit" class="btn btn-success">Update</button>
+        &nbsp;
+        <button routerLink=".." type="button" class="btn btn-secondary">Back</button>
+    </div>
+</form>
+<#
+}
+else if(component == "view")
+{
+#>
+<form [formGroup]="viewForm" (submit)="submitTask()">
+    <div formGroupName="panel">
+<#
+foreach(CodeProperty property in properties)
+{
+if(!property.Type.AsString.Contains(EntityNamespace))
+{
+var lprop=FirstLetterToLower(property.Name);
+#>
+        <label for="<#= lprop #>" class="form-label"><#= lprop #></label>
+        <input type="text" class="form-control" formControlName="<#= lprop #>" id="<#= lprop #>" placeholder="<#= lprop #>">
+<#
+}
+}
+#>
+        <button routerLink=".." type="button" class="btn btn-secondary">Back</button>
+    </div>
+</form>
+<#
+}
+else if(component == "delete")
+{
+#>
+<form [formGroup]="deleteForm" (submit)="submitTask()">
+    <div formGroupName="panel">
+<#
+foreach(CodeProperty property in properties)
+{
+if(!property.Type.AsString.Contains(EntityNamespace))
+{
+var lprop=FirstLetterToLower(property.Name);
+#>
+        <label for="<#= lprop #>" class="form-label"><#= lprop #></label>
+        <input type="text" class="form-control" formControlName="<#= lprop #>" id="<#= lprop #>" placeholder="<#= lprop #>">
+<#
+}
+}
+#>
+        <button type="submit" class="btn btn-danger">Delete</button>
+        &nbsp;
+        <button routerLink=".." type="button" class="btn btn-secondary">Cancel</button>
+    </div>
+</form>
+<#
+}
+#>
+<app-modal *ngIf="modal"></app-modal>
+<# OverwriteFile(StartupProject, "src/app/"+moduleName+"/"+moduleName+"-"+component,moduleName+"-"+component+".component.html"); #>
+
+<#
+}
+#>
+
+<#
+}
+#>

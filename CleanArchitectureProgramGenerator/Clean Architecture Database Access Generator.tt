@@ -242,8 +242,7 @@ namespace Persistence
 {
   //define connection here
   "ConnectionStrings": {
-    "SqlServerDB": "Server=DESKTOP-GBANT4V; Database=BookStoresDB; Trusted_Connection=True;"
-    //"SqlServerDB": "Server=192.168.2.19; Database=gravity_books; TrustServerCertificate=True; User Id=SA;Password=r00t.R00T;"
+    "SqlServerDB": "Server=192.168.2.19; Database=gravity_books; TrustServerCertificate=True; User Id=SA;Password=r00t.R00T;"
   }
 }
 <# OverwriteFile("Startup", "","appsettings.json"); #>
@@ -262,8 +261,9 @@ namespace startup
     {
         public static async Task Main(string[] args)
         {
+            string? path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             await Host.CreateDefaultBuilder(args)
-                .UseContentRoot(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+                .UseContentRoot(path ??= "")
                 .ConfigureServices((hostContext, services) =>
                 {
                     //required if you are using entity framework
@@ -388,7 +388,7 @@ namespace Persistence.Repositories
     {
         public readonly ApplicationDbContext _context;
 
-        private IDbContextTransaction _transaction;
+        private IDbContextTransaction? _transaction;
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -407,7 +407,14 @@ namespace Persistence.Repositories
 
         public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
         {
-            await _transaction.CommitAsync(cancellationToken);
+            if (_transaction == null)
+            {
+                throw new InvalidOperationException("Transaction has not been started.");
+            }
+            else
+            {
+                await _transaction.CommitAsync(cancellationToken);
+            }
         }
 
         public async Task<int> CompleteAsync(CancellationToken cancellationToken = default)
@@ -607,13 +614,13 @@ namespace Application.Services
         public async Task<(IEnumerable<<#= properClassName #>> entities, string Message)> Find<#= properClassName #>(Expression<Func<<#= properClassName #>, bool>> expression, CancellationToken cancellationToken = default)
         {
             var items = await _repositoryManager.<#= properClassName #>Repository.Find(expression);
-            return (items, "<#= properClassName #> records retrieved");
+            return (items, "{\"message\":\"<#= properClassName #> records retrieved\"}");
         }
 
         public async Task<(IEnumerable<<#= properClassName #>> entities, string Message)> GetAll<#= properClassName #>(CancellationToken cancellationToken = default)
         {
             var items = await _repositoryManager.<#= properClassName #>Repository.GetAll();
-            return (items, "<#= properClassName #> records retrieved");
+            return (items, "{\"message\":\"<#= properClassName #> records retrieved\"}");
         }
 
         public async Task<(<#= properClassName #>? entity, string Message)> Get<#= properClassName #>ById(<#= keyType #>, CancellationToken cancellationToken = default)
@@ -623,7 +630,7 @@ namespace Application.Services
             {
                 throw new EntityKeyNotFoundException("<#= properClassName #>", <#= keyValue #>);
             }
-            return (item, "<#= properClassName #> record retrieved");
+            return (item, "{\"message\":\"<#= properClassName #> record retrieved\"}");
         }
 
         public async Task<string> Add<#= properClassName #>(<#= properClassName #> entity, CancellationToken cancellationToken = default)
@@ -639,7 +646,7 @@ namespace Application.Services
                 {
                     await _repositoryManager.<#= properClassName #>Repository.Add(entity);
                     await _repositoryManager.UnitOfWork.CompleteAsync(cancellationToken);
-                    return "<#= properClassName #> record added";
+                    return "{\"message\":\"<#= properClassName #> record added\"}";
                 }
             }
             throw new Exception("Add Error");
@@ -656,7 +663,7 @@ namespace Application.Services
             {
                 _repositoryManager.<#= properClassName #>Repository.Remove(item);
                 await _repositoryManager.UnitOfWork.CompleteAsync(cancellationToken);
-                return "<#= properClassName #> record deleted";
+                return "{\"message\":\"<#= properClassName #> record deleted\"}";
             }
         }
 
@@ -671,7 +678,8 @@ namespace Application.Services
 
             try
             { 
-                _repositoryManager.UnitOfWork.CompleteAsync(cancellationToken);
+                _repositoryManager.<#= properClassName #>Repository.Update(entity);
+                await _repositoryManager.UnitOfWork.CompleteAsync(cancellationToken);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -683,9 +691,9 @@ namespace Application.Services
                 else
                 {
                     throw new Exception("Update Error");
-                }
+                } 
             }
-            return "<#= properClassName #> record updated";
+            return "{\"message\":\"<#= properClassName #> record updated\"}";
         }
     }
 }

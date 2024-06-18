@@ -149,7 +149,7 @@ namespace <#= StartupProject #>.Middlewares
 
         public async Task Invoke(HttpContext httpContext)
         {
-            string authHeader = httpContext.Request.Headers["Authorization"];
+            string? authHeader = httpContext.Request.Headers["Authorization"];
             if (authHeader != null)
             {
                 string auth = authHeader.Split(new char[] { ' ' })[1];
@@ -184,8 +184,8 @@ namespace <#= StartupProject #>.AppSetting
 {
     public class BasicAuthentication
     {
-        public string User { get; set; }
-        public string Password { get; set; }
+        public string? User { get; set; }
+        public string? Password { get; set; }
     }
 }
 <# CreateFile(StartupProject, "AppSetting","BasicAuthentication.cs"); #>
@@ -264,6 +264,15 @@ builder.Services.Configure<BasicAuthentication>(configuration.GetSection("BasicA
 //this is need for exception handling
 builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
+//CORS policy
+builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+{
+    builder.AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+}));
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -288,6 +297,9 @@ app.UseHttpsRedirection();
 
 //app.UseRouting();
 
+//CORS policy
+app.UseCors("MyPolicy");
+
 app.UseAuthorization();
 
 app.MapControllers();
@@ -302,8 +314,7 @@ app.Run();
 {
   //define connection here
   "ConnectionStrings": {
-    "SqlServerDB": "Server=DESKTOP-GBANT4V; Database=BookStoresDB; Trusted_Connection=True;"
-    //"SqlServerDB": "Server=192.168.2.19; Database=gravity_books; TrustServerCertificate=True; User Id=SA;Password=r00t.R00T;"
+    "SqlServerDB": "Server=192.168.2.19; Database=gravity_books; TrustServerCertificate=True; User Id=SA;Password=r00t.R00T;"
   },
   
   //required for basic authentication
@@ -345,7 +356,7 @@ app.Run();
 <#foreach(string className in classNames)
 {
     var properClassName = GetProperClassName(className);
-    var controller =  properClassName + "sController";
+    var controller =  properClassName + "Controller";
     (var keyType, var key, var keyValue, var checkKeyEqual, var entityKeys, var entityValue, var httpKeys, var asprouteItem, var asprouteModel, var aspfors) 
     = GetKeyAndTypeStrings(dte,project1,EntityNamespace+"."+properClassName);
 #>
@@ -363,12 +374,12 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class <#= properClassName #>sController : ControllerBase
+    public class <#= properClassName #>Controller : ControllerBase
     {
-        private readonly ILogger<<#= properClassName #>sController> logger;
+        private readonly ILogger<<#= properClassName #>Controller> logger;
         private readonly IServiceManager _serviceManager;
 
-        public <#= properClassName #>sController(IServiceManager serviceManager, ILogger<<#= properClassName #>sController> logger)
+        public <#= properClassName #>Controller(IServiceManager serviceManager, ILogger<<#= properClassName #>Controller> logger)
         {
             _serviceManager = serviceManager;
             this.logger = logger;

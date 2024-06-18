@@ -3,6 +3,9 @@ This is a .Net8.0 Clean Architecture style code generator which will generate Do
 
 **A working WEBAPI and WEBMVC project pointing a database with multiple tables can be generated and smoke tested under 4 minutes.**
 
+Version 8.1.0 and above supports Generating **Angular 18 Frontend** that make use of the WebAPI backend, all genereted with this program generator.
+- [Angular 18 Fronted](#angular-18-frontend)
+
  
 ---
 ## Table of Contents
@@ -13,6 +16,7 @@ This is a .Net8.0 Clean Architecture style code generator which will generate Do
     * Adding new entities
       * [Code First approach](#code-first-approach)
       * [Database First approach](#database-first-approach)
+- [Angular 18 Fronted](#angular-18-frontend)
 - [Some useful commands](#some-useful-commands)
 
 ---
@@ -20,11 +24,12 @@ This is a .Net8.0 Clean Architecture style code generator which will generate Do
 This is a NuGet package that should be installed as a template in dotnet cli.  
 You can browse this package using manage NuGet packages by searching for "Thomson Mathews" or "CleanArchitectureProgramGenerator"  
 ![Imgur](https://i.imgur.com/OZQPWBX.png)  
-This will install three template files in your project.  
+This will install four template files in your project.  
+[Clean Architecture Angular Generator.tt](#clean-architecture-angular-generator.tt)
 [Clean Architecture Database Access Generator.tt](#clean-architecture-database-access-generator.tt)  
 [Clean Architecture WebAPI Generator.tt](#clean-architecture-webapi-generator.tt)  
 [Clean Architecture WebMVC Generator.tt](#clean-architecture-webmvc-generator.tt)  
-![Imgur](https://i.imgur.com/q4Y6HcW.png)
+![Imgur](https://i.imgur.com/i1OPN4T.png)
 
 Once these template files are installed.   
 
@@ -41,9 +46,11 @@ Now define entities in the Domain Project entities folder using code first appro
 
 **Run Clean Architecture WebMVC Generator.tt** to generate MVC controllers in WebMVC project.   
 
-set WebAPI or WebMVC as a startup project.    
+**Run Clean Architecture Angular Generator.tt** to generate Agular 18 frontend project.   
 
-**Voila! a working WebAPI or WebMVC is ready for you**.  
+set WebAPI or WebMVC or AngularProject1 as a startup project.    
+
+**Voila! a working WebAPI or WebMVC or AngularProject1 is ready for you**.  
 
 if more entities are added, just run all these three transformation again, that's it.
 
@@ -136,6 +143,27 @@ This connect all the wiring between the projects.
 ![Imgur](https://i.imgur.com/JvQp9vz.png) 
 
 *Once you add more entities, you can **run this template again to generate** controllers for the new Entities in the WebAPI Project.*  
+
+---
+## Clean Architecture Angular Generator.tt
+To make use of this generator, you need to have Angular CLI installed in your system.
+**npm install –g @angular/cli**
+Next step is to create a Standalone TypeScript Angular Project in Visual Studio
+![Imgur](https://i.imgur.com/QnNV7er.png)
+This will create a project named AngularProject1, (Important: Leave the project name as **AngularProject1**).
+![Imgur](https://i.imgur.com/EYNzCe7.png)
+this will create the followinf structure in the solution explorer.
+![Imgur](https://i.imgur.com/1hrvdCL.png)
+Go to your Developer PowerShell and change directory to the AngularProject1 folder.
+![Imgur](https://i.imgur.com/CpXF3NI.png)
+Now install these packages
+**npm install bootstrap**
+**npm install ngx-pagination**
+
+Right click on the **Clean Architecture Angular Generator.tt** and select "Run Custom Tool"
+![Imgur](https://i.imgur.com/cHhmXQp.png)
+This will generate module and its component for each entity defined in the Domain project.
+![Imgur](https://i.imgur.com/Mm7JBmM.png)
 
 
 ---
@@ -249,9 +277,17 @@ By default the WebAPI uses BasicAuthentication the userid and password is define
 
 Run template:  
 **Clean Architecture WebMVC Generator.tt**  
-To generate controllers for WebAPI or WebMVC project.  
+To generate controllers for WebMVC project.  
 ![Imgur](https://i.imgur.com/xuZR1aG.png)  
 ![Imgur](https://i.imgur.com/IW00oMb.png)
+
+Run template:  
+**Clean Architecture Angular Generator.tt**  
+This is going to make use of the WebAPI project to get data from the database, so make sure you have the WebAPI project running.
+Now edit the proxy.conf.json file to point to the WebAPI url
+![Imgur](https://i.imgur.com/bbznkjW.png)
+Set AngularProject1 as a startup project and run it and you will see the Angular project handling the **CRUD** operation of each entities.
+![Imgur](https://i.imgur.com/7Va9oIu.png)
 
 ---
 ## Some useful commands
