@@ -25,7 +25,7 @@ This is a NuGet package that should be installed as a template in dotnet cli.
 You can browse this package using manage NuGet packages by searching for "Thomson Mathews" or "CleanArchitectureProgramGenerator"  
 ![Imgur](https://i.imgur.com/OZQPWBX.png)  
 This will install four template files in your project.  
-[Clean Architecture Angular Generator.tt](#clean-architecture-angular-generator.tt)
+[Clean Architecture Angular Generator.tt](#clean-architecture-angular-generator.tt)  
 [Clean Architecture Database Access Generator.tt](#clean-architecture-database-access-generator.tt)  
 [Clean Architecture WebAPI Generator.tt](#clean-architecture-webapi-generator.tt)  
 [Clean Architecture WebMVC Generator.tt](#clean-architecture-webmvc-generator.tt)  
