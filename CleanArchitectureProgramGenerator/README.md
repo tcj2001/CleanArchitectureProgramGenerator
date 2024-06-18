@@ -4,7 +4,7 @@ This is a .Net8.0 Clean Architecture style code generator which will generate Do
 **A working WEBAPI and WEBMVC project pointing a database with multiple tables can be generated and smoke tested under 4 minutes.**
 
 Version 8.1.0 and above supports Generating **Angular 18 Frontend** that make use of the WebAPI backend, all genereted with this program generator.
-- [Angular 18 Fronted](#clean-architecture-angular-generatortt)
+- [Angular 18 Frontend](#clean-architecture-angular-generatortt)
 
  
 ---
@@ -147,20 +147,26 @@ This connect all the wiring between the projects.
 ## Clean Architecture Angular Generator.tt
 To make use of this generator, you need to have Angular CLI installed in your system.
 **npm install –g @angular/cli**
+
 Next step is to create a Standalone TypeScript Angular Project in Visual Studio
 ![Imgur](https://i.imgur.com/QnNV7er.png)  
+
 This will create a project named AngularProject1, (Important: Leave the project name as **AngularProject1**).
 ![Imgur](https://i.imgur.com/EYNzCe7.png)  
-this will create the followinf structure in the solution explorer.
+
+this will create the following structure in the solution explorer.
 ![Imgur](https://i.imgur.com/1hrvdCL.png)  
+
 Go to your Developer PowerShell and change directory to the AngularProject1 folder.
 ![Imgur](https://i.imgur.com/CpXF3NI.png)  
+
 Now install these packages
 **npm install bootstrap**
 **npm install ngx-pagination**
 
 Right click on the **Clean Architecture Angular Generator.tt** and select "Run Custom Tool"
 ![Imgur](https://i.imgur.com/cHhmXQp.png)  
+
 This will generate module and its component for each entity defined in the Domain project.
 ![Imgur](https://i.imgur.com/Mm7JBmM.png)  
 
