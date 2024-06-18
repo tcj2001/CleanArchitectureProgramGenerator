@@ -145,8 +145,8 @@ This connect all the wiring between the projects.
 
 ---
 ## Clean Architecture Angular Generator.tt
-To make use of this generator, you need to have Angular CLI installed in your system.
-**npm install –g @angular/cli**
+To make use of this generator, you need to have Angular CLI installed in your system.  
+**npm install –g @angular/cli**  
 
 Next step is to create a Standalone TypeScript Angular Project in Visual Studio
 ![Imgur](https://i.imgur.com/QnNV7er.png)  
@@ -161,7 +161,7 @@ Go to your Developer PowerShell and change directory to the AngularProject1 fold
 ![Imgur](https://i.imgur.com/CpXF3NI.png)  
 
 Now install these packages
-**npm install bootstrap**
+**npm install bootstrap**  
 **npm install ngx-pagination**
 
 Right click on the **Clean Architecture Angular Generator.tt** and select "Run Custom Tool"
