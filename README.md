@@ -181,6 +181,10 @@ https://github.com/tcj2001/CleanArchitectureProgramGenerator
 ## Installing template from Nuget Package Manager
 From your package manager console.  
 **dotnet new install CleanArchitectureProgramGenerator**  
+if you already have a older version installed  
+ **dotnet new uninstall CleanArchitectureProgramGenerator**  
+ **dotnet new install CleanArchitectureProgramGenerator**  
+
 This will add a new template in your dotnet cli environment.  
 ![Imgur](https://i.imgur.com/4xfUr1Z.png)  
 
@@ -193,20 +197,19 @@ you can use the above command to check if the template was installed.
 There are **two way** to use the template.
 
 **First Method**.  
-Go to a directory where you want to make use of the template and type command.   
+Use command Prompt to a directory where you want to make use create this template project.   
 **dotnet new CAPG -o yourProjectSolution** 
-![Imgur](https://i.imgur.com/G0WnT58.png)  
-
-This will create a ClassLibrary project named CleanArchitectureProgramGenerator within in your project solution  
-![Imgur](https://i.imgur.com/60G7kGd.png)
+![Imgur](https://i.imgur.com/GmLwJAh.png)  
+Double click on the Project, this will open Visual Studio with a Solution containing the projects CleanArchitectureProgramGenerator.  
+Rename the solution to your solution name.
 
 **Second Method**.  
 When you select new project in visual studio you will see a template named CleanArchitectureProgramGenerator, if you don't see filter the project type and select Clean Architecture, select this template and create your project.   
 ![Imgur](https://i.imgur.com/V32Ny3x.png)  
 
-This will create a ClassLibrary project named Clean_Architecture_Program_Generator_for_CSharp_and_NET6 within YourProjectFolderName.    
-![Imgur](https://i.imgur.com/60G7kGd.png)
-  
+This will create a ClassLibrary project named CleanArchitectureProgramGenerator within Solution.    
+![Imgur](https://i.imgur.com/GmLwJAh.png)  
+
 ---
 ## How to check if this really works
 Once all the Data related projects are generated using the "**Clean Architecture Database Access Generator.tt**" template.    
