@@ -3,9 +3,7 @@ This is a .Net8.0 Clean Architecture style code generator which will generate Do
 
 **A working WEBAPI and WEBMVC project pointing a database with multiple tables can be generated and smoke tested under 4 minutes.**
 
-Version 8.1.0 and above supports Generating **Angular 18 Frontend** that make use of the WebAPI backend, all genereted with this program generator.
-- [Angular 18 Frontend](#clean-architecture-angular-generatortt)
-
+Version 8.1.0 and above supports Generating **An FrontEnd in Angular 18** this make use of the WebAPI backend, all of these are generated with this program generator.
  
 ---
 ## Table of Contents
