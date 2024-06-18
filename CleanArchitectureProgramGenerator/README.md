@@ -24,7 +24,7 @@ This is a NuGet package that should be installed as a template in dotnet cli.
 You can browse this package using manage NuGet packages by searching for "Thomson Mathews" or "CleanArchitectureProgramGenerator"  
 ![Imgur](https://i.imgur.com/OZQPWBX.png)  
 This will install four template files in your project.  
-[Clean Architecture Angular Generator.tt](#clean-architecture-angular-generator.tt)  
+[Clean Architecture Angular Generator.tt](#clean-architecture-angular-generatortt)  
 [Clean Architecture Database Access Generator.tt](#clean-architecture-database-access-generator.tt)  
 [Clean Architecture WebAPI Generator.tt](#clean-architecture-webapi-generator.tt)  
 [Clean Architecture WebMVC Generator.tt](#clean-architecture-webmvc-generator.tt)  
@@ -36,9 +36,9 @@ Run **Clean Architecture Database Access Generator.tt** template by right clicki
 ![Imgur](https://i.imgur.com/MpsMt8f.png) 
 
 This will generate the following projects.  
-![Imgur](https://i.imgur.com/F913Fx4.png)
+![Imgur](https://i.imgur.com/F913Fx4.png)  
 Now define entities in the Domain Project entities folder using code first approach or database first approach and ApplicationDbContext in Persistence project context folder.  
-![Imgur](https://i.imgur.com/Ul0NKnH.png)
+![Imgur](https://i.imgur.com/Ul0NKnH.png)  
 **Run Clean Architecture Database Access Generator.tt again** to generate all repositories, services for the each entity that was added in the previous step.  
 
 **Run Clean Architecture WebAPI Generator.tt** to generate API controllers in WebAPI project.   
@@ -148,21 +148,21 @@ This connect all the wiring between the projects.
 To make use of this generator, you need to have Angular CLI installed in your system.
 **npm install –g @angular/cli**
 Next step is to create a Standalone TypeScript Angular Project in Visual Studio
-![Imgur](https://i.imgur.com/QnNV7er.png)
+![Imgur](https://i.imgur.com/QnNV7er.png)  
 This will create a project named AngularProject1, (Important: Leave the project name as **AngularProject1**).
-![Imgur](https://i.imgur.com/EYNzCe7.png)
+![Imgur](https://i.imgur.com/EYNzCe7.png)  
 this will create the followinf structure in the solution explorer.
-![Imgur](https://i.imgur.com/1hrvdCL.png)
+![Imgur](https://i.imgur.com/1hrvdCL.png)  
 Go to your Developer PowerShell and change directory to the AngularProject1 folder.
-![Imgur](https://i.imgur.com/CpXF3NI.png)
+![Imgur](https://i.imgur.com/CpXF3NI.png)  
 Now install these packages
 **npm install bootstrap**
 **npm install ngx-pagination**
 
 Right click on the **Clean Architecture Angular Generator.tt** and select "Run Custom Tool"
-![Imgur](https://i.imgur.com/cHhmXQp.png)
+![Imgur](https://i.imgur.com/cHhmXQp.png)  
 This will generate module and its component for each entity defined in the Domain project.
-![Imgur](https://i.imgur.com/Mm7JBmM.png)
+![Imgur](https://i.imgur.com/Mm7JBmM.png)  
 
 
 ---
@@ -284,9 +284,9 @@ Run template:
 **Clean Architecture Angular Generator.tt**  
 This is going to make use of the WebAPI project to get data from the database, so make sure you have the WebAPI project running.
 Now edit the proxy.conf.json file to point to the WebAPI url
-![Imgur](https://i.imgur.com/bbznkjW.png)
+![Imgur](https://i.imgur.com/bbznkjW.png)  
 Set AngularProject1 as a startup project and run it and you will see the Angular project handling the **CRUD** operation of each entities.
-![Imgur](https://i.imgur.com/7Va9oIu.png)
+![Imgur](https://i.imgur.com/7Va9oIu.png)  
 
 ---
 ## Some useful commands
