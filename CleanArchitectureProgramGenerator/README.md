@@ -199,7 +199,7 @@ There are **two way** to use the template.
 **First Method**.  
 Use command Prompt to a directory where you want to make use create this template project.   
 **dotnet new CAPG -o yourProjectSolution** 
-![Imgur]([img]https://i.imgur.com/GmLwJAh.png)  
+![Imgur](https://i.imgur.com/GmLwJAh.png)  
 Double click on the Project, this will open Visual Studio with a Solution containing the projects CleanArchitectureProgramGenerator.  
 Rename the solution to your solution name.
 
