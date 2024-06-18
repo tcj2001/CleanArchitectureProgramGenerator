@@ -208,7 +208,7 @@ When you select new project in visual studio you will see a template named Clean
 ![Imgur](https://i.imgur.com/V32Ny3x.png)  
 
 This will create a ClassLibrary project named CleanArchitectureProgramGenerator within Solution.    
-![Imgur](https://i.imgur.com/GmLwJAh.png)  
+![Imgur](https://i.imgur.com/13KbUqp.png)  
 
 ---
 ## How to check if this really works
